@@ -270,7 +270,7 @@ def make_inventory_from_files(
         for hosts in groups.values():
             # Groups can be a list of hosts or tuple of (hosts, data)
             hosts = _get_any_tuple_first(hosts)
-
+            # TODO: Generator expressions are silently discarded (?)
             for host in hosts:
                 # Hosts can be a hostname or tuple of (hostname, data)
                 hostname = _get_any_tuple_first(host)
