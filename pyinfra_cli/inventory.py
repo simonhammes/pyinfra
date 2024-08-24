@@ -23,18 +23,30 @@ def _is_inventory_group(key: str, value: Any):
     Verify that a module-level variable (key = value) is a valid inventory group.
     """
 
-    if key.startswith("_") or not isinstance(value, (list, tuple, GeneratorType)):
+    if key.startswith("__"):
+        # Ignore __builtins__/__file__
+        return False
+    elif key.startswith("_"):
+        logger.debug('Ignoring variable "%s" in inventory file since it starts with a leading underscore', key)
         return False
 
-    # If the group is a tuple of (hosts, data), check the hosts
-    if isinstance(value, tuple):
+    if isinstance(value, list):
+        pass
+    elif isinstance(value, tuple):
+        # If the group is a tuple of (hosts, data), check the hosts
         value = value[0]
-
-    # Expand any generators of hosts
-    if isinstance(value, GeneratorType):
+    elif isinstance(value, GeneratorType):
+        # Expand any generators of hosts
         value = list(value)
+    else:
+        logger.debug('Ignoring variable "%s" in inventory file since it is not a list, tuple or generator expression', key)
+        return False
 
-    return all(isinstance(item, ALLOWED_HOST_TYPES) for item in value)
+    if not all(isinstance(item, ALLOWED_HOST_TYPES) for item in value):
+        logger.warning('Ignoring host group "%s". Host groups may only contain strings (host) or tuples (host, data).', key)
+        return False
+
+    return True
 
 
 def _get_group_data(dirname_or_filename: str):
