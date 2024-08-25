@@ -27,7 +27,10 @@ def _is_inventory_group(key: str, value: Any):
         # Ignore __builtins__/__file__
         return False
     elif key.startswith("_"):
-        logger.debug('Ignoring variable "%s" in inventory file since it starts with a leading underscore', key)
+        logger.debug(
+            'Ignoring variable "%s" in inventory file since it starts with a leading underscore',
+            key,
+        )
         return False
 
     if isinstance(value, list):
@@ -39,11 +42,19 @@ def _is_inventory_group(key: str, value: Any):
         # Expand any generators of hosts
         value = list(value)
     else:
-        logger.debug('Ignoring variable "%s" in inventory file since it is not a list, tuple or generator expression', key)
+        logger.debug(
+            'Ignoring variable "%s" in inventory file since '
+            "it is not a list, tuple or generator expression",
+            key,
+        )
         return False
 
     if not all(isinstance(item, ALLOWED_HOST_TYPES) for item in value):
-        logger.warning('Ignoring host group "%s". Host groups may only contain strings (host) or tuples (host, data).', key)
+        logger.warning(
+            'Ignoring host group "%s". '
+            "Host groups may only contain strings (host) or tuples (host, data).",
+            key,
+        )
         return False
 
     return True
