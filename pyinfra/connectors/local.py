@@ -1,10 +1,10 @@
 import os
+import shlex
 from shutil import which
 from tempfile import mkstemp
 from typing import TYPE_CHECKING, Tuple
 
 import click
-import shlex
 from typing_extensions import Unpack
 
 from pyinfra import logger
