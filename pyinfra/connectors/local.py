@@ -4,6 +4,7 @@ from tempfile import mkstemp
 from typing import TYPE_CHECKING, Tuple
 
 import click
+import shlex
 from typing_extensions import Unpack
 
 from pyinfra import logger
@@ -118,6 +119,12 @@ class LocalConnector(BaseConnector):
             bool: Indicating success or failure
         """
 
+        if remote_filename.startswith("~/"):
+            # Do not quote leading tilde to ensure that it gets properly expanded by the shell
+            remote_filename = f"~/{shlex.quote(remote_filename[2:])}"
+        else:
+            remote_filename = QuoteString(remote_filename)
+
         _, temp_filename = mkstemp()
 
         try:
@@ -133,7 +140,7 @@ class LocalConnector(BaseConnector):
 
             # Copy the file using `cp` such that we support sudo/su
             status, output = self.run_shell_command(
-                StringCommand("cp", temp_filename, QuoteString(remote_filename)),
+                StringCommand("cp", temp_filename, remote_filename),
                 print_output=print_output,
                 print_input=print_input,
                 **arguments,
@@ -146,6 +153,7 @@ class LocalConnector(BaseConnector):
 
         if print_output:
             click.echo(
+                # TODO: Check if the modification of remote_filename affects the output
                 "{0}file copied: {1}".format(self.host.print_prefix, remote_filename),
                 err=True,
             )
