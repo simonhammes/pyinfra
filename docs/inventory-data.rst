@@ -8,7 +8,7 @@ By default, pyinfra assumes hosts are SSH servers and the name of the host is us
 Inventory Files
 ---------------
 
-Inventory files contain groups of hosts. Groups are defined as a ``list``, ``tuple`` or ``generator expression``. For example, this inventory creates three groups, ``app_servers``, ``db_servers`` and ``cache_servers``:
+Inventory files contain groups of hosts. Groups are defined as a ``list`` or ``tuple``. For example, this inventory creates two groups, ``app_servers`` and ``db_servers``:
 
 .. code:: python
 
@@ -19,9 +19,7 @@ Inventory files contain groups of hosts. Groups are defined as a ``list``, ``tup
 
     db_servers = (["db-1.net", "db-2.net", "db-3.net",], {})
 
-    cache_servers = (host for host in ("cache-1.net", "cache-2.net"))
-
-If you save this file as ``inventory.py``, you can then use it in when executing pyinfra:
+If you save this file as ``inventory.py``, you can then use it when executing pyinfra:
 
 .. code:: shell
 

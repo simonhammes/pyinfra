@@ -1,7 +1,6 @@
 import socket
 from collections import defaultdict
 from os import listdir, path
-from types import GeneratorType
 from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
 
 from pyinfra import logger
@@ -38,13 +37,9 @@ def _is_inventory_group(key: str, value: Any):
     elif isinstance(value, tuple):
         # If the group is a tuple of (hosts, data), check the hosts
         value = value[0]
-    elif isinstance(value, GeneratorType):
-        # Expand any generators of hosts
-        value = list(value)
     else:
         logger.debug(
-            'Ignoring variable "%s" in inventory file since '
-            "it is not a list, tuple or generator expression",
+            'Ignoring variable "%s" in inventory file since it is not a list or tuple',
             key,
         )
         return False
@@ -281,7 +276,6 @@ def make_inventory_from_files(
         for hosts in groups.values():
             # Groups can be a list of hosts or tuple of (hosts, data)
             hosts = _get_any_tuple_first(hosts)
-            # TODO: Generator expressions are silently discarded (?)
             for host in hosts:
                 # Hosts can be a hostname or tuple of (hostname, data)
                 hostname = _get_any_tuple_first(host)
